@@ -12,10 +12,24 @@
 
     <script>
         const tapButton = document.getElementById("tap-btn")
+        let lastTapTime
 
         tapButton.addEventListener("click", function()  {
-        console.log("tap!")
+        // console.log("tap!")
+
+        const currentTapTime = Date.now()
+
+        if(lastTapTime){
+            const difference = currentTapTime - lastTapTime
+            console.log(difference)
+
+            const bpm = Math.round(60000 / difference)
+            console.log(bpm)
+        }
+        
+        lastTapTime = currentTapTime
     })
+
     </script>
     
 </body>
