@@ -45,8 +45,10 @@
         
         const volume = tapSound.createGain()
         volume.gain.value = 10
-        
+
         const PlayTime = tapSound.currentTime
+        volume.gain.exponentialRampToValueAtTime(0.001, PlayTime + 0.02)
+        
         oscillator.start(PlayTime)
         oscillator.stop(PlayTime + 0.02)
 
