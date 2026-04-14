@@ -6,30 +6,67 @@
     <title>Metronome</title>
 </head>
 <body>
-    <button id="tap-btn">
-        TAP
-    </button>
+    <button id="tap-btn"> TAP </button>
+
+    <p id="bpm-paragraph"> </p>
+
+    <button id="play-btn"> PLAY </button>
 
     <script>
         const tapButton = document.getElementById("tap-btn")
-        let lastTapTime
+        const bpmParagraph = document.getElementById("bpm-paragraph")
+        let lastTapTime, difference, intervalId
+
+        const tapSound = new AudioContext()
 
         tapButton.addEventListener("click", function()  {
-        // console.log("tap!")
 
         const currentTapTime = Date.now()
 
         if(lastTapTime){
-            const difference = currentTapTime - lastTapTime
+            difference = currentTapTime - lastTapTime
             console.log(difference)
 
             const bpm = Math.round(60000 / difference)
+            bpmParagraph.textContent = bpm + " BPM"
             console.log(bpm)
+
         }
         
         lastTapTime = currentTapTime
     })
 
+    const playButton = document.getElementById("play-btn")
+
+    function playSound()
+    {
+        const oscillator = tapSound.createOscillator()
+        oscillator.frequency.value = 440
+        
+        const volume = tapSound.createGain()
+        volume.gain.value = 10
+        
+        const PlayTime = tapSound.currentTime
+        oscillator.start(PlayTime)
+        oscillator.stop(PlayTime + 0.02)
+
+        oscillator.connect(volume)
+        volume.connect(tapSound.destination)
+    }
+
+    playButton.addEventListener("click", function()  {
+
+        if(difference){
+            if(intervalId){
+                clearInterval(intervalId)
+                intervalId = 0
+            } else {
+                intervalId = setInterval(playSound, difference) 
+            }
+        }
+
+    })
+    
     </script>
     
 </body>
