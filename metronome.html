@@ -12,62 +12,78 @@
 
     <button id="play-btn"> PLAY </button>
 
+    <input type="range" min="40" max="218" id="slider">
+
+    <p id="range-paragraph"> </p>
+
     <script>
         const tapButton = document.getElementById("tap-btn")
         const bpmParagraph = document.getElementById("bpm-paragraph")
-        let lastTapTime, difference, intervalId
+        let lastTapTime, difference, intervalId, differenceTaps
 
         const tapSound = new AudioContext()
 
         tapButton.addEventListener("click", function()  {
 
-        const currentTapTime = Date.now()
-
-        if(lastTapTime){
-            difference = currentTapTime - lastTapTime
-            console.log(difference)
-
-            const bpm = Math.round(60000 / difference)
-            bpmParagraph.textContent = bpm + " BPM"
-            console.log(bpm)
-
-        }
-        
-        lastTapTime = currentTapTime
-    })
-
-    const playButton = document.getElementById("play-btn")
-
-    function playSound()
-    {
-        const oscillator = tapSound.createOscillator()
-        oscillator.frequency.value = 440
-        
-        const volume = tapSound.createGain()
-        volume.gain.value = 10
-
-        const PlayTime = tapSound.currentTime
-        volume.gain.exponentialRampToValueAtTime(0.001, PlayTime + 0.02)
-        
-        oscillator.start(PlayTime)
-        oscillator.stop(PlayTime + 0.02)
-
-        oscillator.connect(volume)
-        volume.connect(tapSound.destination)
-    }
-
-    playButton.addEventListener("click", function()  {
-
-        if(difference){
-            if(intervalId){
-                clearInterval(intervalId)
-                intervalId = 0
-            } else {
-                intervalId = setInterval(playSound, difference) 
+            const currentTapTime = Date.now()
+            
+            if(lastTapTime){
+                differenceTaps = currentTapTime - lastTapTime
+                console.log(differenceTaps)
+            
+                const bpm = Math.round(60000 / differenceTaps)
+                bpmParagraph.textContent = bpm + " BPM"
+                console.log(bpm)
+                
+                difference = differenceTaps
             }
+            
+            lastTapTime = currentTapTime
+        })
+
+        const rangeParagraph = document.getElementById("range-paragraph")
+        const rangeSlider = document.getElementById("slider")
+
+        rangeSlider.addEventListener("input", function()  {
+
+            rangeParagraph.textContent = rangeSlider.value + " BPM"
+
+            difference = Math.round(60000 / rangeSlider.value)
+
+        })
+
+        const playButton = document.getElementById("play-btn")
+
+        function playSound()
+        {
+            const oscillator = tapSound.createOscillator()
+            oscillator.frequency.value = 440
+
+            const volume = tapSound.createGain()
+            volume.gain.value = 10
+
+            const PlayTime = tapSound.currentTime
+            volume.gain.exponentialRampToValueAtTime(0.001, PlayTime + 0.02)
+
+            oscillator.start(PlayTime)
+            oscillator.stop(PlayTime + 0.02)
+
+            oscillator.connect(volume)
+            volume.connect(tapSound.destination)
         }
 
-    })
+        playButton.addEventListener("click", function()  {
+
+            if(difference){
+                if(intervalId){
+                    clearInterval(intervalId)
+                    intervalId = 0
+                } else {
+                    intervalId = setInterval(playSound, difference) 
+                }
+            }
+
+        })
     
     </script>
     
