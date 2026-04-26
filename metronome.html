@@ -14,12 +14,23 @@
 
     <input type="range" min="40" max="218" id="slider">
 
+    <label>
+        <input type="radio" name="mode" id="average-bpm"> Average BPM
+    </label>
+
+    <label>
+        <input type="radio" name="mode" id="last-2"> Last 2
+    </label>
+
     <p id="range-paragraph"> </p>
 
     <script>
         const tapButton = document.getElementById("tap-btn")
         const bpmParagraph = document.getElementById("bpm-paragraph")
+        let averageBpm = document.getElementById("average-bpm")
+        let last2 = document.getElementById("last-2")
         let lastTapTime, difference, intervalId, differenceTaps
+        let differenceArray = []
 
         const tapSound = new AudioContext()
 
@@ -30,12 +41,26 @@
             if(lastTapTime){
                 differenceTaps = currentTapTime - lastTapTime
                 console.log(differenceTaps)
+                
+                differenceArray.push(differenceTaps)
+
+                const suma = differenceArray.reduce(function(accumulator, currentValue) {
+                    return accumulator + currentValue
+                }, 0)
             
-                const bpm = Math.round(60000 / differenceTaps)
+
+                if(averageBpm.checked == true)
+                {
+                    difference = suma / differenceArray.length
+                }
+                else if(last2.checked == true)
+                {
+                    difference = differenceTaps
+                }
+
+                const bpm = Math.round(60000 / difference)
                 bpmParagraph.textContent = bpm + " BPM"
                 console.log(bpm)
-                
-                difference = differenceTaps
             }
             
             lastTapTime = currentTapTime
@@ -49,6 +74,7 @@
             rangeParagraph.textContent = rangeSlider.value + " BPM"
 
             difference = Math.round(60000 / rangeSlider.value)
+            
 
         })
 
